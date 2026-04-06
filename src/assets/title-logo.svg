@@ -1,0 +1,14 @@
+<svg width="70" height="25" xmlns="http://www.w3.org/2000/svg">
+ <g>
+  <title>Layer 1</title>
+  <g stroke="null" id="svg_3">
+   <ellipse stroke="#000" ry="10.75116" rx="10.61677" id="svg_2" cy="12.81058" cx="11.90819" fill="#ffffff"/>
+   <ellipse stroke="#000" ry="2.48621" rx="2.48621" id="svg_6" cy="2.59699" cx="11.90819" fill="#BF7E96" stroke-width="0"/>
+   <text stroke="#000" transform="matrix(0.134389 0 0 0.134389 0.125 138.774)" xml:space="preserve" text-anchor="start" font-family="Noto Sans JP" font-size="24" stroke-width="0" id="svg_7" y="-941.79813" x="224.17946" fill="#000000"/>
+   <text stroke="#000" transform="matrix(0.134389 0 0 0.134389 0.125 138.774)" fill="#BF7E96" stroke-width="0" x="195.17946" y="-902.29813" id="svg_4" font-size="90" font-family="'Changa'" text-anchor="start" xml:space="preserve">Celestia</text>
+   <ellipse stroke="#000" fill="#ffffff" cx="11.97539" cy="12.47461" id="svg_8" rx="5.37558" ry="5.37558"/>
+   <ellipse stroke="null" fill="#98b7d6" cx="17.28377" cy="12.13864" id="svg_9" rx="2.08304" ry="2.08304"/>
+  </g>
+ </g>
+
+</svg>
