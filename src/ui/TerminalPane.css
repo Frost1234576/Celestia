@@ -1,0 +1,21 @@
+.terminal-pane {
+  position: absolute;
+  inset: 0;
+  padding: 6px 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.terminal-pane.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.terminal-pane .xterm {
+  height: 100%;
+}
+
+.terminal-pane .xterm-viewport {
+  border-radius: var(--radius-sm);
+}

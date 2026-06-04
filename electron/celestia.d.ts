@@ -1,0 +1,81 @@
+export interface FileNode {
+  name: string
+  path: string
+  isDirectory: boolean
+  isArchive?: boolean
+  children?: FileNode[]
+}
+
+export type ReadFileResult =
+  | { kind: 'text'; content: string }
+  | { kind: 'binary' | 'archive' | 'error'; message: string }
+
+export interface CompileResult {
+  success: boolean
+  stdout: string
+  stderr: string
+}
+
+declare global {
+  interface Window {
+    celestia: {
+      window: {
+        minimize: () => void
+        maximize: () => void
+        close: () => void
+        isMaximized: () => Promise<boolean>
+        onMaximizeChange: (cb: (maximized: boolean) => void) => void
+      }
+      dialog: {
+        openFolder: () => Promise<string | null>
+        openFile: () => Promise<string | null>
+      }
+      fs: {
+        readDir: (path: string) => Promise<FileNode[]>
+        readArchiveTree: (archivePath: string) => Promise<FileNode[]>
+        readFile: (path: string) => Promise<ReadFileResult>
+        writeFile: (path: string, content: string) => Promise<boolean>
+        createFile: (path: string) => Promise<boolean>
+        createDir: (path: string) => Promise<boolean>
+        rename: (oldPath: string, newPath: string) => Promise<boolean>
+        delete: (path: string) => Promise<boolean>
+        exists: (path: string) => Promise<boolean>
+      }
+      shell: {
+        showItemInFolder: (path: string) => Promise<boolean>
+      }
+      terminal: {
+        create: (id: string, cwd?: string) => Promise<boolean>
+        write: (id: string, data: string) => void
+        resize: (id: string, cols: number, rows: number) => void
+        kill: (id: string) => void
+        onData: (id: string, cb: (data: string) => void) => () => void
+        onExit: (id: string, cb: () => void) => void
+      }
+      ollama: {
+        chat: (payload: { model: string; messages: { role: string; content: string }[] }) => Promise<string>
+        listModels: () => Promise<string[]>
+      }
+      agent: {
+        run: (payload: {
+          model: string
+          userMessage: string
+          history: { role: 'user' | 'assistant'; content: string }[]
+          projectPath: string | null
+          openFiles: { path: string; content: string }[]
+          activeFilePath: string | null
+          referencedFiles: { path: string; content: string }[]
+        }) => Promise<{
+          content: string
+          toolEvents: import('../src/core/agent/types').AgentToolEvent[]
+          filesChanged: boolean
+        }>
+      }
+      stella: {
+        compile: (filePath: string, outputDir: string) => Promise<CompileResult>
+      }
+    }
+  }
+}
+
+export {}

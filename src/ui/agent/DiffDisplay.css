@@ -1,0 +1,51 @@
+.diff-display {
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+
+.diff-file {
+  padding: 4px 8px;
+  background: #252525;
+  color: var(--accent);
+  font-size: 10px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.diff-lines {
+  margin: 0;
+  background: #121212;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.diff-line {
+  display: flex;
+  font-family: var(--font-ui);
+  line-height: 1.4;
+}
+
+.diff-line.add { background: rgba(137, 209, 133, 0.12); }
+.diff-line.remove { background: rgba(244, 67, 54, 0.12); }
+
+.diff-gutter {
+  width: 20px;
+  flex-shrink: 0;
+  text-align: center;
+  color: var(--text-muted);
+  user-select: none;
+}
+
+.diff-line.add .diff-gutter { color: #89d185; }
+.diff-line.remove .diff-gutter { color: #ff8a80; }
+
+.diff-text {
+  flex: 1;
+  padding-right: 8px;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.diff-line.add .diff-text { color: #a8e6a3; }
+.diff-line.remove .diff-text { color: #ff8a80; }
