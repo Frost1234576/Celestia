@@ -19,6 +19,10 @@ export interface CompileResult {
 declare global {
   interface Window {
     celestia: {
+      rich_presence: {
+        set: (details: string, state?: string, projectName?: string, smallImageKey?: string) => void
+        clear: () => void
+      }
       window: {
         minimize: () => void
         maximize: () => void

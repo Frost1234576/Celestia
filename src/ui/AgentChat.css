@@ -102,6 +102,7 @@
 .agent-msg-text.typing {
   opacity: 0.6;
   font-style: italic;
+  user-select: none;
 }
 
 .agent-chat-input {

@@ -1,19 +1,15 @@
-import { useState } from 'react'
+import './index.css'
 import './App.css'
-
-import { LayoutView } from "./ui/LayoutView"
-import { LayoutNode } from "./core/layout"
-
-const layout: LayoutNode = {
-  type: "split",
-  dir: "row",
-  sizes: [1, 1],
-  children: [
-    { type: "tabs", active: "a", tabs: [{ id: "a", kind: "editor" }] },
-    { type: "tabs", active: "b", tabs: [{ id: "b", kind: "terminal" }] }
-  ]
-}
+import Navbar from './ui/Navbar'
+import LayoutView from './ui/LayoutView'
 
 export default function App() {
-  return <LayoutView node={layout} />
+  return (
+    <div className="app">
+      <Navbar />
+      <div className="app-body">
+        <LayoutView />
+      </div>
+    </div>
+  )
 }

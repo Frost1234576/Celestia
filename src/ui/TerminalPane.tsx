@@ -4,16 +4,22 @@ import { FitAddon } from '@xterm/addon-fit'
 import '@xterm/xterm/css/xterm.css'
 import { colorizeTerminalOutput } from '../core/terminalOutput'
 import './TerminalPane.css'
+import { useProjectStore } from '../core/project'
 
 interface TerminalPaneProps {
   id: string
   active: boolean
 }
 
+const {setEditorState} = useProjectStore.getState()
+
 export default function TerminalPane({ id, active }: TerminalPaneProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const termRef = useRef<Terminal | null>(null)
   const fitRef = useRef<FitAddon | null>(null)
+
+  const activeRef = useRef(active)
+  useEffect(() => { activeRef.current = active }, [active])
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -31,6 +37,13 @@ export default function TerminalPane({ id, active }: TerminalPaneProps) {
       scrollback: 5000,
     })
 
+    const handleRun = (e: CustomEvent<{ command: string }>) => {
+      if (activeRef.current) {
+        window.celestia.terminal.write(id, e.detail.command + '\r')
+      }
+    }
+    window.addEventListener('terminal:run', handleRun as EventListener)
+
     const fit = new FitAddon()
     term.loadAddon(fit)
     term.open(containerRef.current)
@@ -40,10 +53,15 @@ export default function TerminalPane({ id, active }: TerminalPaneProps) {
     fitRef.current = fit
 
     const unsubData = window.celestia.terminal.onData(id, data => {
+      if(data.trim().startsWith("__DONE__")){
+        setEditorState('ready')
+        data = data.replace("__DONE__", "")
+      }
       term.write(colorizeTerminalOutput(data))
     })
 
-    term.onData(data => window.celestia.terminal.write(id, data))
+    term.onData(data => {
+      window.celestia.terminal.write(id, data)})
 
     const resizeObserver = new ResizeObserver(() => {
       fit.fit()
@@ -52,6 +70,7 @@ export default function TerminalPane({ id, active }: TerminalPaneProps) {
     resizeObserver.observe(containerRef.current)
 
     return () => {
+      window.removeEventListener('terminal:run', handleRun as EventListener)
       unsubData()
       resizeObserver.disconnect()
       term.dispose()

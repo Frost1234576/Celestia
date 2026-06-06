@@ -36,6 +36,7 @@ export default function TerminalView() {
     }
   }, [terminalVisible, terminals.length, createTerminal, projectPath])
 
+
   const handleNewTerminal = () => void createTerminal(projectPath ?? undefined)
 
   const visibleIds = splitPair ?? (activeTerminalId ? [activeTerminalId] : [])

@@ -1,72 +1,119 @@
+/* Wrapper */
 .agent-input-wrap {
-  position: relative;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  position: relative;
 }
 
-.agent-input {
-  width: 100%;
-  resize: none;
-  background: #222;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
+/* The stacking container for highlight + textarea */
+.agent-input-field {
+  position: relative;
+}
+
+/* ─── Highlight layer ─────────────────────────────────────────────────────── */
+.agent-input-highlight {
+  /* Must exactly match textarea geometry */
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;          /* scroll is synced via JS */
+  white-space: pre-wrap;
+  word-break: break-word;
+
+  /* Match your existing textarea font/padding exactly */
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.5;
   padding: 8px 10px;
-  font-size: 12px;
-  line-height: 1.45;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  border: 1px solid transparent; /* same border width so offsets match */
+  box-sizing: border-box;
+
+  /* Keep text invisible — only marks show */
+  color: transparent;
+}
+
+.agent-input-highlight .at-token {
+  background: color-mix(in srgb, var(--at-color, #7c6af7) 18%, transparent);
+  color: transparent;        /* still invisible, only bg matters */
+  border-radius: 4px;
+  /* no padding so character widths stay identical to textarea */
+}
+
+/* ─── Textarea ────────────────────────────────────────────────────────────── */
+.agent-input {
+  position: relative;        /* sits above highlight div */
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+
+  background: transparent;   /* lets highlight show through */
+  caret-color: currentColor; /* keep the caret visible */
+  color: inherit;
+
+  /* Match highlight layer exactly */
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 8px 10px;
+  border: 1px solid var(--border-color, #333);
+  border-radius: 6px;
+  resize: none;
+  outline: none;
 }
 
 .agent-input:focus {
-  border-color: rgba(191, 126, 150, 0.4);
-  box-shadow: 0 0 0 2px rgba(191, 126, 150, 0.1);
+  border-color: var(--focus-color, #7c6af7);
 }
 
-.agent-input-hint {
-  display: flex;
-  gap: 10px;
-  font-size: 9px;
-  color: var(--text-muted);
-  padding: 0 2px;
+.agent-input::placeholder {
+  color: var(--placeholder-color, #666);
 }
 
+/* ─── @ autocomplete menu ─────────────────────────────────────────────────── */
 .at-menu {
   position: absolute;
   bottom: calc(100% + 4px);
   left: 0;
-  right: 0;
-  max-height: 200px;
-  overflow-y: auto;
-  background: #252525;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
-  z-index: 50;
-  animation: atIn 0.12s ease;
-}
-
-@keyframes atIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+  min-width: 220px;
+  background: var(--menu-bg, #1e1e1e);
+  border: 1px solid var(--border-color, #333);
+  border-radius: 6px;
+  padding: 4px;
+  z-index: 100;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
 
 .at-item {
-  display: block;
+  display: flex;
+  align-items: center;
   width: 100%;
-  padding: 6px 10px;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
   text-align: left;
-  font-size: 11px;
-  color: var(--text-secondary);
-  transition: background 0.08s;
+  font-size: 13px;
 }
 
 .at-item:hover,
 .at-item.active {
-  background: var(--bg-selected);
-  color: var(--text-primary);
+  background: var(--menu-hover, #2a2a2a);
 }
 
 .at-name {
-  font-family: var(--font-ui);
+  font-family: monospace;
+  font-size: 12px;
+}
+
+/* ─── Hint bar ────────────────────────────────────────────────────────────── */
+.agent-input-hint {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--hint-color, #555);
+  padding: 0 2px;
+  user-select: none;
 }

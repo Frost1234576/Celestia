@@ -19,6 +19,25 @@ interface TerminalState {
 
 let termCounter = 0
 
+export const getRunCommand = (path: string): string | null => {
+  if(path.startsWith("archive://")){
+    if(!path.endsWith("#")) return null
+    path = path.replace("archive://", "").replace("#","")
+  }
+  const ext = path.split('.').pop()?.toLowerCase()
+  if (!ext) return null
+  const map: Record<string, string> = {
+    'py': 'python %',
+    'js': 'node %',
+    'java': 'java %',
+    'jar': 'java -jar %',
+    'sh': 'bash %',
+    'bat': 'cmd /c %',
+    'ps1': 'powershell %',
+  }
+  return map[ext]?.replace('%', "\""+path+"\"") ?? null
+}
+
 export const useTerminalStore = create<TerminalState>((set, get) => ({
   terminals: [],
   activeTerminalId: null,

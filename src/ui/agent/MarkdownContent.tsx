@@ -1,4 +1,6 @@
 import './MarkdownContent.css'
+import DOMPurify from 'dompurify'
+
 
 interface MarkdownContentProps {
   text: string
@@ -18,7 +20,7 @@ export default function MarkdownContent({ text }: MarkdownContentProps) {
             </pre>
           )
         }
-        return <p key={i} className="md-para" dangerouslySetInnerHTML={{ __html: inlineFormat(block.content) }} />
+        return <p key={i} className="md-para" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(inlineFormat(block.content)) }} />
       })}
     </div>
   )

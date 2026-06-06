@@ -135,10 +135,7 @@
 }
 
 .editor-placeholder-logo {
-  width: 40px;
-  height: 40px;
-  background: var(--accent-dim);
-  border-radius: var(--radius-md);
+  width: 320px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -158,4 +155,8 @@
 .editor-placeholder-sub {
   font-size: 12px;
   color: var(--text-muted);
+}
+
+.editor-placeholder * {
+  user-select: none;
 }

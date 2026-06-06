@@ -2,9 +2,9 @@
 A custom electron IDE with a react front-end and native comparability with Stella and Orion. 
 
 ## 🔧 Main Features
-- [x] Initial Setup
+- [ ] Initial Setup
 - [ ] Flexible Layout
-- [ ] Stella Linting & Highlighting
+- [ ] Stella & Java Linting & Highlighting
 - [ ] YML Highlighting & Utils
 - [ ] Multiple Concurrrent Terminals
 - [ ] Run/Build/Deploy Custom Workflows

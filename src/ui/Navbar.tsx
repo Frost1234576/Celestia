@@ -5,6 +5,7 @@ import { useLayoutStore } from '../core/layout'
 import { useEditorStore } from '../core/editor'
 import { useProjectStore } from '../core/project'
 import { useOutputStore } from '../core/output'
+import { iconForExt } from './FileIcon'
 
 interface MenuItem {
   label: string
@@ -16,13 +17,12 @@ interface MenuItem {
 
 export default function Navbar() {
   const [openMenu, setOpenMenu] = useState<string | null>(null)
-  const [status, setStatus] = useState<'ready' | 'building' | 'error'>('ready')
   const [maximized, setMaximized] = useState(false)
   const navRef = useRef<HTMLElement>(null)
 
   const { toggleSidebar, toggleTerminal, toggleChat } = useLayoutStore()
   const { saveActiveFile, activeTabId } = useEditorStore()
-  const { openFolder, projectPath } = useProjectStore()
+  const { openFolder, projectPath, editorState, setEditorState } = useProjectStore()
 
   const projectName = projectPath
     ? projectPath.split(/[\\/]/).pop() ?? 'celestia'
@@ -45,7 +45,6 @@ export default function Navbar() {
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key === 's') { e.preventDefault(); saveActiveFile() }
       if (e.ctrlKey && e.key === 'b') { e.preventDefault(); toggleSidebar() }
       if (e.ctrlKey && e.key === '`') { e.preventDefault(); toggleTerminal() }
       if (e.ctrlKey && e.key === 'o') { e.preventDefault(); openFolder() }
@@ -54,22 +53,56 @@ export default function Navbar() {
     return () => window.removeEventListener('keydown', handler)
   }, [saveActiveFile, toggleSidebar, toggleTerminal, openFolder])
 
-  const runBuild = async () => {
-    const { projectPath } = useProjectStore.getState()
+  const buildOnly = async () => {
+    const { projectPath, project_settings } = useProjectStore.getState()
     const { activeTabId, tabs } = useEditorStore.getState()
-    const { appendOutput, appendError } = useOutputStore.getState()
-    if (!activeTabId || !projectPath) return
+    const { appendError } = useOutputStore.getState()
+    if (!projectPath) return
     const tab = tabs.find(t => t.id === activeTabId)
-    if (!tab) return
-    setStatus('building')
+    const activePath = tab?.path ? `:${tab.path}` : ''
+    setEditorState('building')
     try {
-      const result = await window.celestia.stella.compile(tab.path, projectPath)
-      appendOutput(result.stdout)
-      appendError(result.stderr)
-      setStatus(result.success ? 'ready' : 'error')
+      // const result = await window.celestia.stella.compile(tab.path, projectPath)
+      // appendOutput(result.stdout)
+      // appendError(result.stderr)
+      // setStatus(result.success ? 'ready' : 'error')
+      if (false){
+        window.dispatchEvent(new CustomEvent('terminal:run', { detail: { command: 'python '+activePath } }))
+      }
+      window.dispatchEvent(new CustomEvent('terminal:run', { detail: { command: project_settings?.build_command+"; echo \"__DONE__\"" } }))
     } catch (err) {
       appendError(err instanceof Error ? err.message : 'Build failed')
-      setStatus('error')
+      setEditorState('error')
+    }
+  }
+
+  const runOnly = async () => {
+    const { projectPath, project_settings } = useProjectStore.getState()
+    // const { activeTabId, tabs } = useEditorStore.getState()
+    const { appendError } = useOutputStore.getState()
+    if (!projectPath) return
+
+    setEditorState('building')
+    try {
+      window.dispatchEvent(new CustomEvent('terminal:run', { detail: { command: project_settings?.run_command+"; echo \"__DONE__\"" } }))
+    } catch (err) {
+      appendError(err instanceof Error ? err.message : 'Build failed')
+      setEditorState('error')
+    }
+  }
+
+  const runBuild = async () => {
+    const { projectPath, project_settings } = useProjectStore.getState()
+    // const { activeTabId, tabs } = useEditorStore.getState()
+    const { appendError } = useOutputStore.getState()
+    if (!projectPath) return
+
+    setEditorState('building')
+    try {
+      window.dispatchEvent(new CustomEvent('terminal:run', { detail: { command: project_settings?.build_command+"; "+project_settings?.run_command+"; echo \"__DONE__\"" } }))
+    } catch (err) {
+      appendError(err instanceof Error ? err.message : 'Build failed')
+      setEditorState('error')
     }
   }
 
@@ -105,20 +138,11 @@ export default function Navbar() {
     {
       label: 'Run',
       items: [
-        { label: 'Build', shortcut: 'Ctrl+Shift+B', action: runBuild },
-        { label: 'Run',   shortcut: 'F5',            action: runBuild },
+        { label: 'Build', shortcut: 'Ctrl+Shift+B', action: buildOnly },
+        { label: 'Run',   shortcut: 'F5',            action: runOnly },
         { label: 'Stop',  shortcut: 'Shift+F5',      danger: true },
       ],
-    },
-    {
-      label: 'Stella',
-      items: [
-        { label: 'Compile File',    shortcut: 'Ctrl+Shift+C' },
-        { label: 'Compile Project', action: runBuild },
-        { separator: true, label: '' },
-        { label: 'Generate Stellab' },
-      ],
-    },
+    }
   ]
 
   return (
@@ -159,6 +183,11 @@ export default function Navbar() {
         <span className="navbar-app-name">Celestia</span>
         <span className="navbar-drag-sep">—</span>
         <span className="navbar-project-name">{projectName}</span>
+        {(useProjectStore.getState().project_settings?.type && useProjectStore.getState().project_settings?.type !== null && iconForExt(useProjectStore.getState().project_settings?.type!!, true) !== null) && (
+          <span className="navbar-project-type">
+            {iconForExt(useProjectStore.getState().project_settings?.type!!, true)}
+          </span>
+        )}
       </div>
 
       <div className="navbar-actions no-drag">
@@ -168,46 +197,42 @@ export default function Navbar() {
       </div>
 
       <div className="navbar-status no-drag">
-        <div className={`status-dot ${status}`} />
+        <div className={`status-dot ${editorState}`} />
         <span className="status-text">
-          {{ ready: 'ready', building: 'building...', error: 'error' }[status]}
+          {{ ready: 'ready', building: 'building...', error: 'error' }[editorState]}
         </span>
       </div>
 
       <div className="navbar-window-controls no-drag">
-        <button
-          className="window-btn minimize"
-          onClick={() => window.celestia.window.minimize()}
-          title="Minimize"
-        >
-          <svg width="10" height="1" viewBox="0 0 10 1">
-            <rect width="10" height="1" fill="currentColor" />
+        {/* Minimize */}
+        <button className="window-btn minimize" onClick={() => window.celestia.window.minimize()}>
+          <svg width="10" height="10" viewBox="0 0 10 10" style={{ display: 'block' }}>
+            <rect x="0" y="4" width="10" height="1" fill="currentColor" />
           </svg>
         </button>
-        <button
-          className="window-btn maximize"
-          onClick={() => window.celestia.window.maximize()}
-          title={maximized ? 'Restore' : 'Maximize'}
-        >
+
+        {/* Maximize / Restore */}
+        <button className="window-btn maximize" onClick={() => window.celestia.window.maximize()}>
           {maximized ? (
-            <svg width="10" height="10" viewBox="0 0 10 10">
-              <path d="M2 0h8v8H8V2H0V0h2z M0 2h6v6H0z" fill="currentColor" fillRule="evenodd" />
+            <svg width="10" height="10" viewBox="0 0 10 10" style={{ display: 'block' }}>
+              <rect x="3" y="0" width="7" height="7" fill="none" stroke="currentColor" strokeWidth="1" />
+              <rect x="0" y="3" width="7" height="7" fill="#1e1e1e" stroke="currentColor" strokeWidth="1" />
             </svg>
           ) : (
-            <svg width="10" height="10" viewBox="0 0 10 10">
+            <svg width="10" height="10" viewBox="0 0 10 10" style={{ display: 'block' }}>
               <rect x="0" y="0" width="10" height="10" fill="none" stroke="currentColor" strokeWidth="1" />
             </svg>
           )}
         </button>
-        <button
-          className="window-btn close"
-          onClick={() => window.celestia.window.close()}
-          title="Close"
-        >
-          <svg width="10" height="10" viewBox="0 0 10 10">
-            <path d="M1 0L0 1l4 4-4 4 1 1 4-4 4 4 1-1-4-4 4-4-1-1-4 4z" fill="currentColor" />
+
+        {/* Close */}
+        <button className="window-btn close" onClick={() => window.celestia.window.close()}>
+          <svg width="10" height="10" viewBox="0 0 10 10" style={{ display: 'block' }}>
+            <line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" strokeWidth="1" strokeLinecap="square" />
+            <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" strokeWidth="1" strokeLinecap="square" />
           </svg>
         </button>
+                
       </div>
     </nav>
   )

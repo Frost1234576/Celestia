@@ -19,6 +19,12 @@ export interface CompileResult {
 }
 
 contextBridge.exposeInMainWorld('celestia', {
+  rich_presence: {
+    set: (details: string, state?: string, projectName?: string, smallImageKey?: string) =>
+      ipcRenderer.send('rich-presence:set', { details, state, projectName, smallImageKey }),
+    clear: () => ipcRenderer.send('rich-presence:clear'),
+  },
+
   window: {
     minimize:    ()  => ipcRenderer.send('window:minimize'),
     maximize:    ()  => ipcRenderer.send('window:maximize'),
@@ -108,4 +114,10 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   off:    (...args: Parameters<typeof ipcRenderer.off>)    => ipcRenderer.off(...args),
   send:   (...args: Parameters<typeof ipcRenderer.send>)   => ipcRenderer.send(...args),
   invoke: (...args: Parameters<typeof ipcRenderer.invoke>) => ipcRenderer.invoke(...args),
+})
+
+// preload.ts
+contextBridge.exposeInMainWorld('electron', {
+  onSaveFile: (cb: () => void) => ipcRenderer.on('save-file', cb),
+  offSaveFile: () => ipcRenderer.removeAllListeners('save-file'),
 })

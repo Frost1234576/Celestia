@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import '../AgentChat.css'
+import './AgentChat.css'
 import { useProjectStore } from '../core/project'
 import { useEditorStore } from '../core/editor'
 import { extractAtRefs, type ChatTurn } from '../core/agent/types'
@@ -32,9 +32,9 @@ export default function AgentChat() {
 
   const resolveRefPath = (ref: string): string | null => {
     if (!projectPath) return null
-    if (ref.includes(':') || ref.startsWith('/') || ref.includes('\\')) {
-      return ref
-    }
+    // if (ref.includes(':') || ref.startsWith('/') || ref.includes('\\')) {
+    //   return ref
+    // }
     return joinPath(projectPath, ref)
   }
 
@@ -52,9 +52,11 @@ export default function AgentChat() {
       const activeTab = tabs.find(t => t.id === activeTabId)
 
       const refs = extractAtRefs(text)
+      const cleaned = text.replace(/@(?=[\w./\\])/g, '')
       const referencedFiles: { path: string; content: string }[] = []
       for (const ref of refs) {
         const p = resolveRefPath(ref)
+        console.log("Resolved ref", { ref, p })
         if (!p) continue
         const existing = tabs.find(t => t.path === p)
         if (existing) {
@@ -71,7 +73,7 @@ export default function AgentChat() {
 
       const result = await window.celestia.agent.run({
         model,
-        userMessage: text,
+        userMessage: cleaned,
         history,
         projectPath,
         openFiles,

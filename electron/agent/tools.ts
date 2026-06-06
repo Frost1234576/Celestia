@@ -179,7 +179,7 @@ export async function executeTool(
 ): Promise<ToolResult> {
   switch (name) {
     case 'read_file': {
-      const abs = resolvePath(ctx, String(args.path ?? ''))
+      const abs = resolvePath(ctx, String(args.path ?? '').split(':')[0])
       if (!abs) return { ok: false, output: 'Invalid path or no project open' }
       const fromOpen = ctx.openFileContents.get(abs)
       const raw = fromOpen ?? (() => {

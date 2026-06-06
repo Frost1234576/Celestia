@@ -164,3 +164,71 @@
   display: flex;
   flex-direction: column;
 }
+
+.archived-file {
+  color: #f5c842;
+}
+
+
+.virtual-file {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ─── Add these to your existing Sidebar.css ─────────────────────────────── */
+
+/* Inline hover action buttons */
+.tree-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.tree-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--text-muted, #888);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.1s, color 0.1s;
+}
+
+.tree-action:hover {
+  background: var(--hover-bg, rgba(255,255,255,0.1));
+  color: var(--text, #eee);
+}
+
+.tree-action-danger:hover {
+  background: rgba(220, 60, 60, 0.2);
+  color: #f87171;
+}
+
+/* Inline rename / new-item input */
+.tree-rename-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--input-bg, #1a1a1a);
+  border: 1px solid var(--focus-color, #7c6af7);
+  border-radius: 3px;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  padding: 1px 4px;
+  outline: none;
+}
+
+/* Wrapper for new item input at root / inside folder */
+.tree-new-item {
+  display: flex;
+  align-items: center;
+  padding: 2px 8px;
+  padding-left: calc(8px + var(--depth, 0) * 12px);
+}

@@ -4,6 +4,10 @@ import * as monaco from 'monaco-editor'
 import { useEditorStore } from '../core/editor'
 import { setupLinting } from '../core/linting/setupLinting'
 import FileIcon from './FileIcon'
+import titleLogo from '../assets/title-logo.svg';
+import { useProjectStore } from '../core/project'
+
+// inside the component:
 
 export default function EditorView() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -11,8 +15,30 @@ export default function EditorView() {
   const modelsRef = useRef<Map<string, monaco.editor.ITextModel>>(new Map())
   const activeTabIdRef = useRef<string | null>(null)
 
-  const { tabs, activeTabId, closeTab, setActiveTab, updateContent, isUnsaved } = useEditorStore()
+  const { tabs, activeTabId, closeTab, setActiveTab, updateContent, isUnsaved, saveActiveFile } = useEditorStore()
   const activeTab = tabs.find(t => t.id === activeTabId) ?? null
+  const projectPathRef = useRef<string | null>(null)
+
+  const projectPath = useProjectStore(s => s.projectPath)
+
+  
+
+  useEffect(() => {
+    projectPathRef.current = projectPath
+  }, [projectPath])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === 'i') {
+        e.preventDefault()
+        const selected = window.getSelection()?.toString() ?? ''
+        window.dispatchEvent(new CustomEvent('fill-agent-input', { detail: { text: selected } }))
+      }
+      // console.log(e.ctrlKey + " " + e.key)
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -30,6 +56,44 @@ export default function EditorView() {
       glyphMargin: true,
     })
 
+    editor.updateOptions({ accessibilitySupport: 'off' })
+
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyI, () => {
+      const model = editor.getModel()
+      const selection = editor.getSelection()
+      if (!model || !selection) return
+
+      const selected = model.getValueInRange(selection)
+      const absPath = model.uri.fsPath
+      const projectPath = projectPathRef.current
+
+      const filePath = projectPath && absPath.toLowerCase().startsWith(projectPath.toLowerCase())
+        ? absPath.slice(projectPath.length).replace(/^[/\\]/, '')
+        : absPath
+
+      const startLine = selection.startLineNumber
+      const endLine = selection.endLineNumber
+      const lineRef = startLine === endLine ? `L${startLine}` : `L${startLine}-${endLine}`
+
+      const atRef = `@${filePath}:${lineRef}`
+      const text = selected
+        ? `${atRef}\n\`\`\`\n${selected}\n\`\`\``
+        : atRef
+
+      window.dispatchEvent(new CustomEvent('fill-agent-input', { detail: { text } }))
+    })
+
+
+    // @ts-ignore - internal API
+    // editor._standaloneKeybindingService.addDynamicKeybinding(
+    //   '-editor.action.triggerSuggest', // or whichever action is stealing it
+    //   monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
+    //   () => {}
+    // )
+
+     // after creating the editor
+  
+
     editorRef.current = editor
 
     editor.onDidChangeModelContent(() => {
@@ -44,6 +108,14 @@ export default function EditorView() {
       editorRef.current = null
     }
   }, [updateContent])
+
+  // EditorView.tsx
+  useEffect(() => {
+    window.electron.onSaveFile(() => {
+      useEditorStore.getState().saveActiveFile()
+    })
+    return () => { window.electron.offSaveFile() }
+  }, [])
 
   useEffect(() => {
     activeTabIdRef.current = activeTabId
@@ -127,8 +199,7 @@ export default function EditorView() {
         />
         {!activeTab && (
           <div className="editor-placeholder">
-            <div className="editor-placeholder-logo">C</div>
-            <p className="editor-placeholder-title">Celestia</p>
+            <img className="editor-placeholder-logo" src={titleLogo} alt="Celestia" />
             <p className="editor-placeholder-sub">Open a file from the explorer to start editing</p>
           </div>
         )}
