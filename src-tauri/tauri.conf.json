@@ -1,0 +1,51 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Celestia",
+  "version": "0.0.0",
+  "identifier": "dev.celestia.ide",
+  "build": {
+    "beforeDevCommand": "npm run dev:frontend",
+    "devUrl": "http://localhost:5173",
+    "beforeBuildCommand": "npm run build:frontend",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Celestia",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 800,
+        "minHeight": 500,
+        "decorations": false,
+        "backgroundColor": "#1a1a1a",
+        "visible": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/celestia-logo-tiny.ico"
+    ],
+    "resources": {
+      "../resources/cfr.jar": "resources/cfr.jar",
+      "../resources/lsp-bridge.cjs": "resources/lsp-bridge.cjs"
+    }
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    },
+    "dialog": null,
+    "fs": {
+      "requireLiteralLeadingDot": false
+    },
+    "process": null
+  }
+}

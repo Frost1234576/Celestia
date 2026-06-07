@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+dist-electron/
+
+# Tauri
+src-tauri/target/
+src-tauri/gen/
+
+# Misc
+.DS_Store
+*.local

@@ -1,0 +1,52 @@
+.file-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.file-icon-img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  display: block;
+}
+
+.file-icon-svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.file-icon.open .file-icon-img {
+  opacity: 0.85;
+}
+
+/* ─── File type badge on folder icons ──────────────────────────────────────── */
+
+.file-icon-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -3px;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Dark ring to separate badge from folder icon */
+  box-shadow: 0 0 0 1.5px #1a1a1a;
+  background: #1a1a1a;
+  line-height: 0;
+  pointer-events: none;
+}
+
+.file-icon-badge img,
+.file-icon-badge svg {
+  width: 8px;
+  height: 8px;
+  display: block;
+  border-radius: 1px;
+}

@@ -1,0 +1,119 @@
+/* Wrapper */
+.agent-input-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+}
+
+/* The stacking container for highlight + textarea */
+.agent-input-field {
+  position: relative;
+}
+
+/* ─── Highlight layer ─────────────────────────────────────────────────────── */
+.agent-input-highlight {
+  /* Must exactly match textarea geometry */
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;          /* scroll is synced via JS */
+  white-space: pre-wrap;
+  word-break: break-word;
+
+  /* Match your existing textarea font/padding exactly */
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 8px 10px;
+  border: 1px solid transparent; /* same border width so offsets match */
+  box-sizing: border-box;
+
+  /* Keep text invisible — only marks show */
+  color: transparent;
+}
+
+.agent-input-highlight .at-token {
+  background: color-mix(in srgb, var(--at-color, #7c6af7) 18%, transparent);
+  color: transparent;        /* still invisible, only bg matters */
+  border-radius: 4px;
+  /* no padding so character widths stay identical to textarea */
+}
+
+/* ─── Textarea ────────────────────────────────────────────────────────────── */
+.agent-input {
+  position: relative;        /* sits above highlight div */
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+
+  background: transparent;   /* lets highlight show through */
+  caret-color: currentColor; /* keep the caret visible */
+  color: inherit;
+
+  /* Match highlight layer exactly */
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 8px 10px;
+  border: 1px solid var(--border-color, #333);
+  border-radius: 6px;
+  resize: none;
+  outline: none;
+}
+
+.agent-input:focus {
+  border-color: var(--focus-color, #7c6af7);
+}
+
+.agent-input::placeholder {
+  color: var(--placeholder-color, #666);
+}
+
+/* ─── @ autocomplete menu ─────────────────────────────────────────────────── */
+.at-menu {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 0;
+  min-width: 220px;
+  background: var(--menu-bg, #1e1e1e);
+  border: 1px solid var(--border-color, #333);
+  border-radius: 6px;
+  padding: 4px;
+  z-index: 100;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.at-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  font-size: 13px;
+}
+
+.at-item:hover,
+.at-item.active {
+  background: var(--menu-hover, #2a2a2a);
+}
+
+.at-name {
+  font-family: monospace;
+  font-size: 12px;
+}
+
+/* ─── Hint bar ────────────────────────────────────────────────────────────── */
+.agent-input-hint {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--hint-color, #555);
+  padding: 0 2px;
+  user-select: none;
+}

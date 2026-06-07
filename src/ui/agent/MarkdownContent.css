@@ -1,0 +1,27 @@
+.md-content { font-size: 12px; line-height: 1.55; color: var(--text-secondary); }
+.md-content h2, .md-content h3, .md-content h4 { color: var(--text-primary); margin: 8px 0 4px; font-size: inherit; }
+.md-content h2 { font-size: 13px; }
+.md-content h3 { font-size: 12px; }
+.md-para { margin: 0 0 6px; }
+.md-inline { background: #2a2a2a; padding: 1px 4px; border-radius: 3px; font-size: 11px; color: var(--accent); }
+.md-code-block {
+  position: relative;
+  background: #141414;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+  margin: 6px 0;
+  overflow-x: auto;
+  font-size: 11px;
+  line-height: 1.45;
+}
+.md-code-lang {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+.md-code-block code { color: #d4d4d4; white-space: pre; }
+.md-content ul { margin: 4px 0 4px 16px; }

@@ -1,0 +1,20 @@
+.layout-view {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+}
+
+.layout-view > .allotment-module_splitView__L-yRc {
+  height: 100%;
+}
+
+/* Override allotment sash (the drag handle) to match our theme */
+:global(.sash-module_sash__SiBkd) {
+  background: var(--border-subtle) !important;
+}
+
+:global(.sash-module_sash__SiBkd:hover),
+:global(.sash-module_sash__SiBkd.sash-module_active__kzOXs) {
+  background: var(--accent) !important;
+}
